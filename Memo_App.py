@@ -2,6 +2,7 @@ import os
 
 MEMO_DIR = "memos"
 
+# 메모 저장 폴더 생성
 if not os.path.exists(MEMO_DIR):
     os.makedirs(MEMO_DIR)
 
