@@ -1,0 +1,88 @@
+sequenceDiagram
+    participant User
+    participant UI
+    participant NoteController
+    participant Storage
+
+    User->>UI: 앱 실행
+    activate UI
+    UI->>NoteController: 메모 목록 불러오기
+    activate NoteController
+    NoteController->>Storage: 저장된 메모 요청
+    activate Storage
+    Storage-->>NoteController: 메모 목록 반환
+    deactivate Storage
+    NoteController-->>UI: 메모 목록 전달
+    deactivate NoteController
+    deactivate UI
+
+    User->>UI: 새 메모 작성
+    activate UI
+    UI->>NoteController: 새 메모 저장 요청 및 제목 중복 확인
+    activate NoteController
+    NoteController->>Storage: 제목 중복 확인
+    activate Storage
+    Storage-->>NoteController: 중복 여부 반환
+    deactivate Storage
+
+    alt 제목 중복됨
+        NoteController-->>UI: 중복제목 오류 메시지 표시
+    else 제목 중복 안됨
+        NoteController->>Storage: 메모 저장
+        activate Storage
+        Storage-->>NoteController: 저장 완료
+        deactivate Storage
+        NoteController-->>UI: 저장 완료 메시지 표시
+    end
+    deactivate NoteController
+    deactivate UI
+
+     User->>UI: 메모 수정 선택
+    activate UI
+    UI->>NoteController: 수정할 메모 제목 요청
+    activate NoteController
+    NoteController->>Storage: 메모 존재 여부 확인
+    activate Storage
+    Storage-->>NoteController: 메모 데이터 반환 또는 오류 메세지
+    deactivate Storage
+    NoteController-->>UI: 메모 데이터 반환 또는 오류 메시지
+    deactivate NoteController
+
+    alt 메모 있음
+        User->>UI: 새 내용 입력
+        UI->>NoteController: 수정된 내용 전달
+        activate NoteController
+        NoteController->>Storage: 메모 덮어쓰기 저장
+        activate Storage
+        Storage-->>NoteController: 저장 완료
+        deactivate Storage
+        NoteController-->>UI: 수정 완료 메시지
+        deactivate NoteController
+    else 메모 없음
+        UI-->>User: 존재하지 않는 메모 오류 출력
+        end
+    deactivate UI
+
+    User->>UI: 메모 목록 보기
+    activate UI
+    UI->>NoteController: 메모 목록 요청
+    activate NoteController
+    NoteController->>Storage: 저장된 메모 요청
+    activate Storage
+    Storage-->>NoteController: 메모 목록 반환
+    deactivate Storage
+    NoteController-->>UI: 메모 목록 표시
+    deactivate NoteController
+    deactivate UI
+
+    User->>UI: 특정 메모 내용 보기
+    activate UI
+    UI->>NoteController: 메모 데이터 요청
+    activate NoteController
+    NoteController->>Storage: 저장된 메모 유무 확인 및 데이터 요청
+    activate Storage
+    Storage-->>NoteController: 메모 데이터 반환
+    deactivate Storage
+    NoteController-->>UI: 요청한 메모 데이터 표시
+    deactivate NoteController
+    deactivate UI
